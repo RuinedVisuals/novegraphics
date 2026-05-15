@@ -1,0 +1,222 @@
+.galleryContainer {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  padding: 10vh 0;
+  background: #000;
+  color: #fff;
+  overflow: hidden;
+}
+
+.canvasWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+
+.uiOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 30px 40px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: auto;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+
+  .left {
+    flex: 1;
+  }
+
+  .right {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .center {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .kurosawaLogo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .kanji {
+      font-size: 1.6rem;
+      color: #ff2a1f;
+      font-weight: 900;
+    }
+
+    .names {
+      display: flex;
+      flex-direction: column;
+      font-size: 1.6rem;
+      font-weight: 700;
+      line-height: 1.1;
+      opacity: 0.8;
+    }
+  }
+
+  .backBtn {
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    padding: 6px 14px;
+    background: transparent;
+    cursor: pointer;
+    font-size: 0.65rem;
+  }
+
+  .topNav {
+    display: flex;
+    gap: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 4px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    font-size: 0.65rem;
+
+    span {
+      cursor: pointer;
+      opacity: 0.5;
+      transition: opacity 0.3s;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+
+    .activeFilter {
+      background: #fff;
+      color: #000;
+      padding: 0 4px;
+      opacity: 1;
+    }
+  }
+
+  .career {
+    opacity: 0.5;
+    font-size: 0.65rem;
+  }
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  padding-bottom: 40px;
+}
+
+.metadataBottom {
+  display: flex;
+  align-items: center;
+  gap: 80px;
+  text-align: center;
+  pointer-events: auto;
+
+  .navArrow {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    opacity: 0.4;
+    transition: opacity 0.3s;
+    font-size: 1.5rem;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    .arrowIcon {
+      display: block;
+      transform: scaleY(0.8);
+    }
+  }
+
+  .filmDetails {
+    h2 {
+      font-size: 2.2rem;
+      font-weight: 400;
+      margin: 0;
+      font-family: serif;
+      letter-spacing: 0.02em;
+    }
+
+    .japaneseTitle {
+      color: #ff2a1f;
+      font-size: 0.75rem;
+      margin-top: 6px;
+      letter-spacing: 0.15em;
+      opacity: 0.9;
+    }
+
+    .year {
+      font-size: 0.6rem;
+      margin-top: 15px;
+      opacity: 0.5;
+      letter-spacing: 0.1em;
+    }
+  }
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  opacity: 0.6;
+  pointer-events: auto;
+}
+
+.vhsOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 20;
+  mix-blend-mode: overlay;
+  opacity: 0.9;
+  background: url('https://www.transparenttextures.com/patterns/pinstriped-suit.png'); // Placeholder noise
+}
+
+.scanlines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 21;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%,
+    rgba(0, 0, 0, 0.1) 50%
+  ), linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.03),
+    rgba(0, 255, 0, 0.01),
+    rgba(0, 0, 255, 0.03)
+  );
+  background-size: 100% 4px, 3px 100%;
+}
