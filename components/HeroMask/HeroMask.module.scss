@@ -128,6 +128,9 @@
 }
 
 @media (max-width: 768px) {
+  .hero{
+    height: 60vh;
+  }
   .topLabel {
     top: 12%;
     left: 5%;
@@ -143,7 +146,7 @@
 
   .bottomLeft {
     left: 5%;
-    bottom: 8%;
+    bottom: 3%;
     width: 190px;
 
     h4 {
@@ -158,7 +161,7 @@
 
   .bottomRight {
     right: 5%;
-    bottom: 20%;
+    bottom: 8%;
     width: 190px;
     gap: 1rem;
   }

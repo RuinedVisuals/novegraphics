@@ -39,7 +39,7 @@ export default function FilmGallery({ films }: { films: Film[] }) {
   return (
     <section className={styles.galleryContainer} id="film-gallery">
       <div className={styles.canvasWrapper}>
-        <Canvas shadows dpr={[1, 2]} camera={{ position: [0, 0, 6.2], fov: 34 }}>
+        <Canvas shadows dpr={[1, 2]} camera={{ position: [0, 0, 6.2], fov: 34 }} style={{ touchAction: "none" }}>
           <Suspense fallback={null}>
             <Scene
               films={films}
@@ -57,7 +57,6 @@ export default function FilmGallery({ films }: { films: Film[] }) {
       <div className={styles.uiOverlay}>
         <header className={styles.header}>
           <div className={styles.left}>
-            <button className={styles.backBtn}>BACK / 背面</button>
           </div>
 
           <div className={styles.center}>
@@ -71,7 +70,7 @@ export default function FilmGallery({ films }: { films: Film[] }) {
           </div>
 
           <div className={styles.right}>
-            <div className={styles.career}>CAREER 1943年~1993年</div>
+            <div className={styles.career}></div>
           </div>
         </header>
 

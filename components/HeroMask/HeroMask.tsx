@@ -16,6 +16,7 @@ const FADE_MS = 100;
 
 export default function HeroMask() {
     const [active, setActive] = useState(0);
+    const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
         const id = setInterval(
@@ -26,12 +27,19 @@ export default function HeroMask() {
         return () => clearInterval(id);
     }, []);
 
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
     return (
         <section className={styles.hero}>
             <svg
                 className={styles.svg}
                 viewBox="0 0 1920 1080"
-                preserveAspectRatio="xMidYMid slice"
+                preserveAspectRatio={isMobile ? 'xMidYMid meet' : 'xMidYMid slice'}
                 role="img"
                 aria-label="NOVE"
             >
@@ -103,7 +111,7 @@ export default function HeroMask() {
                     y="0"
                     width="1920"
                     height="1080"
-                    fill="#080808"
+                    fill="#000"
                     mask="url(#nove-mask)"
                 />
             </svg>

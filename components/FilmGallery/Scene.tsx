@@ -68,8 +68,8 @@ function Poster({
     const abs = Math.abs(offset);
     const isActive = abs < 0.35;
 
-    const sideGap = isMobile ? 0.95 : 1.28;
-    const spineGap = isMobile ? 0.48 : 0.45;
+    const sideGap = isMobile ? 0.7 : 1.28;
+    const spineGap = isMobile ? 0.42 : 0.45;
 
     const x =
       abs < 0.35
@@ -80,9 +80,9 @@ function Poster({
     const z = isActive ? 0.85 : -0.08 * abs;
     const rotY = isActive ? -0.08 : 0;
     const rotZ = isActive ? -0.045 : 0;
-    const scaleX = isActive ? 1.18 : 0.4;
-    const scaleY = isActive ? 1.18 : 1.04;
-    const opacity = abs > 12 ? 0 : isActive ? 1 : 0.9;
+    const scaleX = isActive ? (isMobile ? 0.92 : 1.18) : (isMobile ? 0.78 : 0.4);
+    const scaleY = isActive ? (isMobile ? 0.92 : 1.18) : (isMobile ? 0.81 : 1.04);
+    const opacity = abs > 12 ? 0 : isActive ? 1 : isMobile ? 0.35 : 0.9;
 
     tempVec.set(x, y, z);
     group.position.lerp(tempVec, 0.1);

@@ -14,6 +14,20 @@ export default function AudioPlayer() {
   const [idx, setIdx] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // start minimized on mobile
+  useEffect(() => {
+    if (window.innerWidth < 768) setCollapsed(true);
+  }, []);
 
   const howlRef = useRef<Howl | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -195,8 +209,38 @@ export default function AudioPlayer() {
 
   const track = TRACKS[idx];
 
+  if (isMobile && collapsed) {
+    return (
+      <button
+        className={styles.collapsedBtn}
+        onClick={() => setCollapsed(false)}
+        aria-label="Show player"
+      >
+        {playing ? (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+          </svg>
+        ) : (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8 5v14l11-7L8 5z" />
+          </svg>
+        )}
+      </button>
+    );
+  }
+
   return (
-    <div className={styles.player}>
+    <div className={`${styles.player} ${isMobile ? styles.playerMobile : ''}`}>
+      {isMobile && (
+        <button
+          className={styles.closeBtn}
+          onClick={() => setCollapsed(true)}
+          aria-label="Minimize player"
+        >
+          ×
+        </button>
+      )}
+
       <div className={styles.topLine} />
 
       <canvas ref={canvasRef} className={styles.waveform} />

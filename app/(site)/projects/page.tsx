@@ -4,6 +4,8 @@ import { urlFor } from '@/sanity/image'
 import type { Project } from '@/sanity/types'
 import ProjectsCanvas from '@/components/ProjectsCanvas/ProjectsCanvas'
 import ProjectGrid from '@/components/ProjectGrid/ProjectGrid'
+import FilmGallery from '@/components/FilmGallery/FilmGallery'
+import { getFilms } from '@/sanity/getFilms'
 
 export const revalidate = 60
 
@@ -21,7 +23,10 @@ const query = groq`
 `
 
 export default async function ProjectsPage() {
-  const projects: Project[] = await client.fetch(query)
+  const [projects, films]: [Project[], Awaited<ReturnType<typeof getFilms>>] = await Promise.all([
+    client.fetch(query),
+    getFilms(),
+  ])
 
   const canvasUrls = projects
     .filter(p => p.frontImage)
@@ -36,6 +41,7 @@ export default async function ProjectsPage() {
     <main>
       <ProjectsCanvas imageUrls={canvasUrls} />
       <ProjectGrid projects={projects} urls={gridUrls} />
+      <FilmGallery films={films} />
     </main>
   )
 }

@@ -32,7 +32,7 @@ export default function Footer() {
       </div>
 
       <div className={styles.copy}>
-        NOVE GRAPHICS © 2025&nbsp;&nbsp;//&nbsp;&nbsp;BUILT WITH OBSESSION. NOT TEMPLATES.
+        NOVE GRAPHICS © 2026&nbsp;&nbsp;//&nbsp;&nbsp;BUILT WITH OBSESSION BY RUINEDVISUALS
       </div>
     </footer>
   );
