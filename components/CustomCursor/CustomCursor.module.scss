@@ -1,0 +1,26 @@
+.cursor {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1000;
+  filter: url('#cursor-goo');
+  mix-blend-mode: difference;
+
+  span {
+    position: absolute;
+    display: block;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--ink);
+    transform-origin: center center;
+    will-change: transform;
+  }
+}
+
+// Hide on touch-only devices
+@media (pointer: coarse) {
+  .cursor {
+    display: none;
+  }
+}

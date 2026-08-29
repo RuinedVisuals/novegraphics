@@ -1,0 +1,9 @@
+.panel {
+  position: fixed;
+  inset: 0;
+  background: var(--red);
+  z-index: 300;
+  pointer-events: none;
+  transform: scaleX(0);
+  transform-origin: left center;
+}

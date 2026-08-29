@@ -1,0 +1,27 @@
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  color: var(--ink-dim);
+  background: none;
+  border: none;
+  cursor: none;
+  transition: color 0.2s;
+
+  &:hover {
+    color: var(--ink);
+  }
+}
+
+.dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--red);
+  flex-shrink: 0;
+  transition: background 0.3s;
+}

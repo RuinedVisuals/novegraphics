@@ -1,0 +1,38 @@
+// styles/_variables.scss
+
+:root {
+  // PALETTE — Dark mode (default)
+  --bg:         #080808;
+  --bg-2:       #111111;
+  --bg-3:       #1a1a1a;
+  --red:        #d42b1e;
+  --red-dark:   #8b1a14;
+  --ink:        #f0ece0;
+  --ink-dim:    #5a5550;
+  --border:     rgba(240, 236, 224, 0.07);
+  --nav-bg-scrolled: rgba(8, 8, 8, 0.9);
+  --bg-glass:   rgba(8, 8, 8, 0.84);
+
+  // TYPOGRAPHY
+  --font-gothic:  'UnifrakturMaguntia', serif;
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-mono:    'Space Mono', monospace;
+  --font-body:    'Barlow Condensed', sans-serif;
+
+  // SPACING
+  --nav-height: 72px;
+}
+
+// Red mode
+[data-theme="red"] {
+  --bg:         #c8160c;
+  --bg-2:       #b31309;
+  --bg-3:       #9e1108;
+  --red:        #0a0a0a;
+  --red-dark:   #1f1f1f;
+  --ink:        #0a0a0a;
+  --ink-dim:    rgba(8, 8, 8, 0.45);
+  --border:     rgba(8, 8, 8, 0.14);
+  --nav-bg-scrolled: rgba(180, 14, 7, 0.92);
+  --bg-glass:   rgba(160, 12, 6, 0.88);
+}

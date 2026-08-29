@@ -1,0 +1,44 @@
+.logoWrap {
+  display: inline-block;
+  cursor: none;
+}
+
+.outer {
+  padding: 3px;
+  background: var(--bg);
+  transition: border-color 0.2s;
+}
+
+.inner {
+  padding: 6px 14px;
+  transition: border-color 0.2s;
+}
+
+.gothic {
+  font-family: var(--font-gothic);
+  font-size: 1.6rem;
+  color: var(--ink);
+  display: block;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.sub {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.4em;
+  color: var(--ink);
+  text-align: center;
+  display: block;
+  transition: color 0.2s;
+}
+
+.logoWrap:hover .outer,
+.logoWrap:hover .inner {
+  border-color: var(--red);
+}
+
+.logoWrap:hover .gothic,
+.logoWrap:hover .sub {
+  color: var(--red);
+}

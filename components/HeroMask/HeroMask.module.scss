@@ -1,0 +1,174 @@
+.hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background: #000000;
+  overflow: hidden;
+  display: block;
+}
+
+.svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.photo {
+  filter: grayscale(0.92) contrast(2.1) brightness(1) saturate(0.2) hue-rotate(195deg);
+}
+
+.overlayContent {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.topLabel {
+  position: absolute;
+  top: 12%;
+  left: 2%;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  mix-blend-mode: difference;
+
+  p {
+    margin: 0;
+    font-size: 1.6rem;
+    font-family: 'IMPACT', serif;
+    font-weight: 500;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: #FA281E;
+  }
+}
+
+.labelLine {
+  width: 20px;
+  height: 1px;
+  background: #FA281E;
+}
+
+.bottomLeft {
+  position: absolute;
+  left: 2%;
+  bottom: 6%;
+  width: 320px;
+  mix-blend-mode: difference;
+
+  h4 {
+    margin: 0 0 0.9rem;
+    font-size:1rem;
+    font-weight: 600;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.7;
+    letter-spacing: 0.04em;
+    color: #FA281E;
+  }
+}
+
+.bottomRight {
+  position: absolute;
+  right: 3%;
+  bottom: 5%;
+
+  width: min(430px, 30vw);
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2rem;
+
+  text-align: right;
+
+  mix-blend-mode: difference;
+}
+
+.largeText {
+  margin: 0;
+  font-size: clamp(0.9rem, 1vw, 1.05rem);
+  line-height: 1.9;
+  letter-spacing: 0.03em;
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  span {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: rgba(255, 255, 255, 0.45);
+  }
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.76' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 220px 220px;
+  opacity: 0.24;
+  mix-blend-mode: overlay;
+}
+
+@media (max-width: 768px) {
+  .topLabel {
+    top: 12%;
+    left: 5%;
+
+    p {
+      font-size: 0.6rem;
+    }
+  }
+
+  .labelLine {
+    width: 40px;
+  }
+
+  .bottomLeft {
+    left: 5%;
+    bottom: 8%;
+    width: 190px;
+
+    h4 {
+      font-size: 0.68rem;
+    }
+
+    p {
+      font-size: 0.72rem;
+      line-height: 1.5;
+    }
+  }
+
+  .bottomRight {
+    right: 5%;
+    bottom: 20%;
+    width: 190px;
+    gap: 1rem;
+  }
+
+  .largeText {
+    font-size: 0.72rem;
+    line-height: 1.6;
+  }
+
+  .meta span {
+    font-size: 0.58rem;
+  }
+}
