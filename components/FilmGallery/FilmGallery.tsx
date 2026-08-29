@@ -57,6 +57,7 @@ export default function FilmGallery({ films }: { films: Film[] }) {
       <div className={styles.uiOverlay}>
         <header className={styles.header}>
           <div className={styles.left}>
+
           </div>
 
           <div className={styles.center}>
