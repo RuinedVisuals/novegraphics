@@ -59,9 +59,8 @@ export default function AudioPlayer() {
     const step = drawable / BARS;
     const barW = Math.max(2, step * 0.58);
 
-    const rgb = document.documentElement.dataset.theme === 'red'
-      ? '10,10,10'
-      : '212,43,30';
+    // the player is a dark panel in both themes
+    const rgb = '212,43,30';
 
     const grad = ctx.createLinearGradient(0, CANVAS_H, 0, 0);
     grad.addColorStop(0, `rgba(${rgb},0.95)`);

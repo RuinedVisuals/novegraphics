@@ -1,14 +1,17 @@
 import { groq } from 'next-sanity'
 import { client } from './client'
 import { urlFor } from './image'
+import { PROJECT_ORDER } from './queries'
+import { CATEGORY_LABELS, type ProjectCategory } from './types'
 import type { Film } from '@/components/FilmGallery/data'
 
 const ACCENTS = ['#ff2a1f', '#3a0618']
 
 const query = groq`
-  *[_type == "project"] | order(year desc) {
+  *[_type == "project"] | ${PROJECT_ORDER} {
     _id,
     title,
+    slug { current },
     year,
     category,
     description,
@@ -25,8 +28,9 @@ export async function getFilms(): Promise<Film[]> {
     .filter((p: any) => p.frontImage)
     .map((p: any, i: number): Film => ({
       id: p._id,
+      slug: p.slug?.current ?? '',
       title: p.title ?? '',
-      subTitle: p.category?.toUpperCase().replace('-', ' ') ?? '',
+      subTitle: CATEGORY_LABELS[p.category as ProjectCategory] ?? p.category?.toUpperCase() ?? '',
       year: String(p.year ?? ''),
       category: p.category ?? '',
       image: urlFor(p.frontImage).width(800).height(1168).url(),

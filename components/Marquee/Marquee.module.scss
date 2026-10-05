@@ -1,0 +1,49 @@
+@use '../../styles/mixins' as *;
+
+.band {
+  @include negative-panel;
+  overflow: hidden;
+  padding: 18px 0;
+  background: var(--bg-2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  font-family: var(--font-display);
+  letter-spacing: 2px;
+  line-height: 1.1;
+  color: var(--ink);
+  animation: marq 28s linear infinite;
+
+  &.anton {
+    font-family: var(--font-anton);
+    letter-spacing: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+.run {
+  display: flex;
+  flex-shrink: 0;
+  gap: 48px;
+  padding-right: 48px;
+
+  span {
+    white-space: nowrap;
+  }
+}
+
+.red {
+  color: var(--red);
+}
+
+@keyframes marq {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}

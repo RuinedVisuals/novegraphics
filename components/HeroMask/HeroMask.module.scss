@@ -1,8 +1,11 @@
+@use '../../styles/mixins' as *;
+
 .hero {
   position: relative;
   width: 100%;
   height: 100vh;
-  background: #000000;
+  min-height: 620px;
+  background: var(--bg);
   overflow: hidden;
   display: block;
 }
@@ -19,100 +22,175 @@
   filter: grayscale(0.92) contrast(2.1) brightness(1) saturate(0.2) hue-rotate(195deg);
 }
 
+// Whole overlay layer blends with the photo
 .overlayContent {
   position: absolute;
-  inset: 0;
+  inset: 0px var(--gutter) 40px;
   z-index: 20;
   pointer-events: none;
+  mix-blend-mode: difference;
+
+  // black ink would vanish under difference on the red ground
+  :global([data-theme='red']) & {
+    mix-blend-mode: normal;
+  }
+}
+
+.corner {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 0 solid var(--ink);
+  opacity: 0.5;
+
+  &.tl { top: 0; left: 0; border-top-width: 1px; border-left-width: 1px; }
+  &.tr { top: 0; right: 0; border-top-width: 1px; border-right-width: 1px; }
+  &.bl { bottom: 0; left: 0; border-bottom-width: 1px; border-left-width: 1px; }
+  &.br { bottom: 0; right: 0; border-bottom-width: 1px; border-right-width: 1px; }
 }
 
 .topLabel {
   position: absolute;
-  top: 12%;
-  left: 2%;
+  top: 22px;
+  left: 30px;
   display: flex;
   align-items: center;
-  gap: 1rem;
-  mix-blend-mode: difference;
+  gap: 14px;
 
   p {
     margin: 0;
-    font-size: 1.6rem;
-    font-family: 'IMPACT', serif;
-    font-weight: 500;
+    font-family: var(--font-anton);
+    font-size: clamp(18px, 1.7vw, 28px);
     letter-spacing: 0.24em;
     text-transform: uppercase;
-    color: #FA281E;
+    color: var(--red);
   }
 }
 
 .labelLine {
-  width: 20px;
+  width: 28px;
   height: 1px;
-  background: #FA281E;
+  background: var(--red);
+}
+
+.topRight {
+  position: absolute;
+  top: 24px;
+  right: 30px;
+  display: flex;
+  gap: 22px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--ink);
+}
+
+.coords {
+  color: var(--ink-dim);
 }
 
 .bottomLeft {
   position: absolute;
-  left: 2%;
-  bottom: 6%;
+  left: 30px;
+  bottom: 26px;
   width: 320px;
-  mix-blend-mode: difference;
 
   h4 {
     margin: 0 0 0.9rem;
-    font-size:1rem;
+    font-family: var(--font-body);
+    font-size: 1rem;
     font-weight: 600;
     letter-spacing: 0.24em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.92);
+    color: var(--ink);
   }
 
   p {
     margin: 0;
-    font-size: 1rem;
-    line-height: 1.7;
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    line-height: 1.6;
     letter-spacing: 0.04em;
-    color: #FA281E;
+    color: var(--red);
   }
+}
+
+.cue {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 4px;
+  color: var(--ink-mid);
+  white-space: nowrap;
+}
+
+.cueTrack {
+  position: relative;
+  display: block;
+  width: 1px;
+  height: 44px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--ink) 15%, transparent);
+}
+
+.cueFill {
+  position: absolute;
+  inset: 0;
+  background: var(--red);
+  animation: cue 2s var(--ease-move) infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes cue {
+  0%     { transform: scaleY(0); transform-origin: top; }
+  50%    { transform: scaleY(1); transform-origin: top; }
+  50.01% { transform-origin: bottom; }
+  100%   { transform: scaleY(0); transform-origin: bottom; }
 }
 
 .bottomRight {
   position: absolute;
-  right: 3%;
-  bottom: 5%;
-
+  right: 30px;
+  bottom: 26px;
   width: min(430px, 30vw);
-
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 2rem;
-
+  gap: 1.6rem;
   text-align: right;
-
-  mix-blend-mode: difference;
 }
 
 .largeText {
   margin: 0;
-  font-size: clamp(0.9rem, 1vw, 1.05rem);
-  line-height: 1.9;
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 1.15vw, 1.2rem);
+  line-height: 1.6;
   letter-spacing: 0.03em;
-  color: rgba(255, 255, 255, 0.74);
+  color: var(--ink-soft);
 }
 
 .meta {
   display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
+  gap: 16px;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-mid);
+}
 
-  span {
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.22em;
-    color: rgba(255, 255, 255, 0.45);
-  }
+.slash {
+  color: var(--red);
 }
 
 .grain {
@@ -127,51 +205,54 @@
   mix-blend-mode: overlay;
 }
 
-@media (max-width: 768px) {
-  .hero{
-    height: 60vh;
+@include mobile {
+  .hero {
+    height: 75vh;
+    min-height: 420px;
   }
+
+  .overlayContent {
+    inset: 84px var(--gutter) 24px;
+  }
+
   .topLabel {
-    top: 12%;
-    left: 5%;
+    top: 16px;
+    left: 16px;
 
-    p {
-      font-size: 0.6rem;
-    }
+    p { font-size: 0.75rem; }
   }
 
-  .labelLine {
-    width: 40px;
+  .topRight {
+    display: none;
   }
 
   .bottomLeft {
-    left: 5%;
-    bottom: 3%;
-    width: 190px;
+    left: 16px;
+    bottom: 16px;
+    width: 46%;
 
-    h4 {
-      font-size: 0.68rem;
-    }
+    h4 { font-size: 0.68rem; }
+    p { font-size: 0.72rem; line-height: 1.5; }
+  }
 
-    p {
-      font-size: 0.72rem;
-      line-height: 1.5;
-    }
+  .cue {
+    display: none;
   }
 
   .bottomRight {
-    right: 5%;
-    bottom: 8%;
-    width: 190px;
+    right: 16px;
+    bottom: 16px;
+    width: 46%;
     gap: 1rem;
   }
 
   .largeText {
     font-size: 0.72rem;
-    line-height: 1.6;
+    line-height: 1.5;
   }
 
-  .meta span {
+  .meta {
+    gap: 8px;
     font-size: 0.58rem;
   }
 }

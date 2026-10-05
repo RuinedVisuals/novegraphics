@@ -1,0 +1,105 @@
+@use '../../../styles/mixins' as *;
+
+.red { color: var(--red); }
+
+.kickerRed {
+  @include kicker(var(--red));
+}
+
+.hero {
+  position: relative;
+  padding: clamp(40px, 6vw, 90px) var(--gutter) 0;
+  overflow-x: clip;
+}
+
+.kickerRow {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  @include kicker;
+}
+
+.backdrop {
+  @include backdrop-word(clamp(140px, 24vw, 430px));
+  top: clamp(90px, 10vw, 170px);
+}
+
+.h1 {
+  position: relative;
+  margin: clamp(30px, 4vw, 60px) 0 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(88px, 15vw, 260px);
+  line-height: 0.82;
+}
+
+.body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+  gap: clamp(30px, 5vw, 90px);
+  padding: clamp(60px, 8vw, 120px) var(--gutter);
+}
+
+.aside {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  font-family: var(--font-mono);
+}
+
+.email {
+  display: block;
+  margin-top: 14px;
+  font-family: var(--font-display);
+  font-size: clamp(34px, 3.4vw, 56px);
+  line-height: 1;
+  overflow-wrap: anywhere;
+  cursor: none;
+  transition: color 0.2s ease;
+
+  &:hover { color: var(--red); }
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+
+.infoRow {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  padding: 12px 0;
+  @include row-border;
+
+  a {
+    cursor: none;
+    transition: color 0.2s ease;
+
+    &:hover { color: var(--red); }
+  }
+}
+
+.infoLabel {
+  color: var(--ink-dim);
+}
+
+.serif {
+  margin: 0;
+  max-width: 220px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 24px;
+  line-height: 1.1;
+  color: var(--ink-soft);
+}
+
+@include mobile {
+  .body {
+    grid-template-columns: 1fr;
+  }
+}

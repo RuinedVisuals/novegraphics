@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
+import Link from "next/link";
 import { Canvas } from "@react-three/fiber";
 import type { Film } from "./data";
 import { Scene } from "./Scene";
@@ -14,6 +15,7 @@ export default function FilmGallery({ films }: { films: Film[] }) {
   const [isMobile, setIsMobile] = useState(false);
 
   const activeFilm = films.length > 0 ? films[getFilmIndex(activeIndex, films.length)] : null;
+  const p2 = (n: number) => String(n).padStart(2, "0");
 
   const handleNext = () => setActiveIndex((prev) => prev + 1);
   const handlePrev = () => setActiveIndex((prev) => prev - 1);
@@ -51,51 +53,56 @@ export default function FilmGallery({ films }: { films: Film[] }) {
         </Canvas>
       </div>
 
-      <div className={styles.vhsOverlay} />
       <div className={styles.scanlines} />
 
       <div className={styles.uiOverlay}>
         <header className={styles.header}>
-          <div className={styles.left}>
+          <span className={styles.sideLabel}>SELECTED FILES</span>
 
-          </div>
-
-          <div className={styles.center}>
-            <div className={styles.kurosawaLogo}>
-              <span className={styles.kanji}>黒明澤</span>
-              <div className={styles.names}>
-                <span>NOVE</span>
-                <span>GRAPHICS</span>
-              </div>
+          <div className={styles.kurosawaLogo}>
+            <span className={styles.kanji}>黒明澤</span>
+            <div className={styles.names}>
+              <span>NOVE</span>
+              <span>GRAPHICS</span>
             </div>
           </div>
 
-          <div className={styles.right}>
-            <div className={styles.career}></div>
-          </div>
+          <span className={`${styles.sideLabel} ${styles.right}`}>SYSTEM: NTSC // SP</span>
         </header>
 
-        <main className={styles.content}>
+        <div className={styles.content}>
           <div className={styles.metadataBottom}>
-            <button className={styles.navArrow} onClick={handlePrev} aria-label="Previous" type="button">←</button>
+            <button className={`${styles.navArrow} ${styles.prev}`} onClick={handlePrev} aria-label="Previous" type="button">←</button>
 
             <div className={styles.filmDetails}>
               {activeFilm && (
                 <>
                   <h2>{activeFilm.title}</h2>
-                  <div className={styles.japaneseTitle}>{activeFilm.subTitle}</div>
-                  <div className={styles.year}>{activeFilm.year}</div>
+                  <div className={styles.category}>{activeFilm.subTitle}</div>
+                  <div className={styles.fileRow}>
+                    <span>{activeFilm.year}</span>
+                    <span className={styles.dash}>—</span>
+                    {activeFilm.slug && <Link href={`/projects/${activeFilm.slug}`}>[ VIEW FILE → ]</Link>}
+                  </div>
+                  <div className={styles.counter}>
+                    {p2(getFilmIndex(activeIndex, films.length) + 1)} <span className={styles.slash}>/</span>{" "}
+                    <span className={styles.total}>{p2(films.length)}</span>
+                  </div>
                 </>
               )}
             </div>
 
-            <button className={styles.navArrow} onClick={handleNext} aria-label="Next" type="button">→</button>
+            <button className={`${styles.navArrow} ${styles.next}`} onClick={handleNext} aria-label="Next" type="button">→</button>
           </div>
-        </main>
+        </div>
 
         <footer className={styles.footer}>
-          <div className={styles.copyright}>© ALL RIGHTS RESERVED.</div>
-          <div className={styles.social}>FB / TW</div>
+          <span>© ALL RIGHTS RESERVED.</span>
+          <span className={styles.social}>
+            <a href="https://instagram.com/nove_graphics" target="_blank" rel="noopener noreferrer">IG</a>
+            {" / "}
+            <span>BE</span>
+          </span>
         </footer>
       </div>
     </section>

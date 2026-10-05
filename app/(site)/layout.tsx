@@ -4,6 +4,7 @@ import PageTransition from '@/components/PageTransition/PageTransition'
 import LenisProvider from '@/components/LenisProvider/LenisProvider'
 import Preloader from '@/components/Preloader/Preloader'
 import AudioPlayer from '@/components/AudioPlayer/AudioPlayer'
+import Grain from '@/components/Grain/Grain'
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -19,6 +20,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
         </LenisProvider>
       </div>
       <AudioPlayer />
+      <Grain />
     </div>
   )
 }

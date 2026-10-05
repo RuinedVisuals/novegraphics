@@ -1,3 +1,5 @@
+@use '../../styles/mixins' as *;
+
 .header {
   position: fixed;
   top: 0;
@@ -7,11 +9,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 48px;
+  padding: 0 var(--gutter);
   z-index: 100;
   transition: background 0.3s;
 
   &.scrolled {
+    @include negative-panel;
     background: var(--nav-bg-scrolled);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border);

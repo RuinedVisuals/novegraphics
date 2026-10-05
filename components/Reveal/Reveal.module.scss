@@ -1,0 +1,32 @@
+.line {
+  display: block;
+  overflow: hidden;
+  // keep cap tops/descenders from being clipped with the tight .78–.82 line-heights
+  padding: 0.08em 0 0.04em;
+  margin: -0.08em 0 -0.04em;
+}
+
+.lineInner {
+  display: block;
+}
+
+.red {
+  color: var(--red);
+}
+
+.statement {
+  margin: 0;
+  font-family: var(--font-display);
+  line-height: 0.95;
+  text-wrap: pretty;
+}
+
+.word {
+  --p: 0;
+  color: color-mix(in srgb, var(--ink) calc(var(--p) * 100%), var(--from));
+}
+
+.tone0 { --from: var(--ink); }
+.tone1 { --from: var(--ink-mid); }
+.tone2 { --from: color-mix(in srgb, var(--ink-mid) 45%, var(--bg)); }
+.tone3 { --from: color-mix(in srgb, var(--ink-mid) 22%, var(--bg)); }

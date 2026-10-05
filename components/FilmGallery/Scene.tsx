@@ -237,7 +237,6 @@ export function Scene({ films, activeIndex, setActiveIndex, isMobile }: ScenePro
 
   return (
     <>
-      <color attach="background" args={["#000000"]} />
       <ambientLight intensity={2.8} />
       <group
         position={[0, 0.1, 0]}

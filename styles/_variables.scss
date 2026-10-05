@@ -9,6 +9,8 @@
   --red-dark:   #8b1a14;
   --ink:        #f0ece0;
   --ink-dim:    #5a5550;
+  --ink-soft:   #b9b2a5;
+  --ink-mid:    #8a8378;
   --border:     rgba(240, 236, 224, 0.07);
   --nav-bg-scrolled: rgba(8, 8, 8, 0.9);
   --bg-glass:   rgba(8, 8, 8, 0.84);
@@ -18,20 +20,33 @@
   --font-display: 'Bebas Neue', sans-serif;
   --font-mono:    'Space Mono', monospace;
   --font-body:    'Barlow Condensed', sans-serif;
+  --font-anton:   'Anton', Impact, sans-serif;
+  --font-serif:   'Instrument Serif', serif;
 
   // SPACING
   --nav-height: 72px;
+  --gutter:     48px;
+
+  // MOTION
+  --ease-move:  cubic-bezier(0.77, 0, 0.18, 1);
+
+  @media (max-width: 768px) {
+    --gutter: 20px;
+  }
 }
 
-// Red mode
+// Red mode — the negative of dark: red ground, black ink, cream accent
+// (--red is the accent slot, so it flips to cream here)
 [data-theme="red"] {
   --bg:         #c8160c;
   --bg-2:       #b31309;
   --bg-3:       #9e1108;
-  --red:        #0a0a0a;
-  --red-dark:   #1f1f1f;
+  --red:        #f0ece0;
+  --red-dark:   #7a0c06;
   --ink:        #0a0a0a;
-  --ink-dim:    rgba(8, 8, 8, 0.45);
+  --ink-dim:    rgba(8, 8, 8, 0.5);
+  --ink-soft:   rgba(8, 8, 8, 0.78);
+  --ink-mid:    rgba(8, 8, 8, 0.62);
   --border:     rgba(8, 8, 8, 0.14);
   --nav-bg-scrolled: rgba(180, 14, 7, 0.92);
   --bg-glass:   rgba(160, 12, 6, 0.88);

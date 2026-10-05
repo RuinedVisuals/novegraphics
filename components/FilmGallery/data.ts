@@ -1,5 +1,6 @@
 export interface Film {
   id: string;
+  slug: string;
   title: string;
   subTitle: string;
   year: string;

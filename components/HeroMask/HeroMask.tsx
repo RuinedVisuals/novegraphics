@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTimecode } from '@/components/Timecode/Timecode';
 import styles from './HeroMask.module.scss';
 
 const IMAGES = [
@@ -17,8 +18,10 @@ const FADE_MS = 100;
 export default function HeroMask() {
     const [active, setActive] = useState(0);
     const [isMobile, setIsMobile] = useState(false);
+    const tc = useTimecode();
 
     useEffect(() => {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
         const id = setInterval(
             () => setActive(prev => (prev + 1) % IMAGES.length),
             HOLD_MS
@@ -50,7 +53,7 @@ export default function HeroMask() {
                             x="960"
                             y="800"
                             textAnchor="middle"
-                            fontFamily="'IMPACT', serif"
+                            fontFamily="'Anton', Impact, sans-serif"
                             fontSize="720"
                             textLength="1920"
                             lengthAdjust="spacingAndGlyphs"
@@ -67,7 +70,7 @@ export default function HeroMask() {
                             x="965"
                             y="803"
                             textAnchor="middle"
-                            fontFamily="'IMPACT', serif"
+                            fontFamily="'Anton', Impact, sans-serif"
                             fontSize="720"
                             textLength="1920"
                             lengthAdjust="spacingAndGlyphs"
@@ -101,8 +104,8 @@ export default function HeroMask() {
                     y="0"
                     width="1920"
                     height="1080"
-                    fill="#e6e0d2"
-                    opacity="0.16"
+                    style={{ fill: 'var(--red)' }}
+                    opacity="0.14"
                     mask="url(#ghost-mask)"
                 />
 
@@ -111,32 +114,51 @@ export default function HeroMask() {
                     y="0"
                     width="1920"
                     height="1080"
-                    fill="#000"
+                    style={{ fill: 'var(--bg)' }}
                     mask="url(#nove-mask)"
                 />
             </svg>
 
             <div className={styles.overlayContent}>
+                <span className={`${styles.corner} ${styles.tl}`} />
+                <span className={`${styles.corner} ${styles.tr}`} />
+                <span className={`${styles.corner} ${styles.bl}`} />
+                <span className={`${styles.corner} ${styles.br}`} />
+
                 <div className={styles.topLabel}>
+                    <span className={styles.labelLine} />
                     <p>DIGGING CULTURE</p>
+                </div>
+
+                <div className={styles.topRight}>
+                    <span className={styles.coords}>37.98°N 23.72°E</span>
+                    <span>TC {tc}</span>
                 </div>
 
                 <div className={styles.bottomLeft}>
                     <h4>ATHENS / GREECE</h4>
                     <p>
-                        Motion, typography and fragmented urban imagery merged into an
+                        Typography and fragmented urban imagery merged into an
                         interactive visual composition.
                     </p>
+                </div>
+
+                <div className={styles.cue}>
+                    <span>DIG DEEPER</span>
+                    <span className={styles.cueTrack}>
+                        <span className={styles.cueFill} />
+                    </span>
                 </div>
 
                 <div className={styles.bottomRight}>
                     <p className={styles.largeText}>
                         A monochromatic exploration of identity, memory and distortion
-                        through oversized typography, cinematic texture and moving image.
+                        through oversized typography, cinematic texture and print.
                     </p>
 
                     <div className={styles.meta}>
                         <span>GRAPHIC DESIGN</span>
+                        <span className={styles.slash}>/</span>
                         <span>TYPOGRAPHY</span>
                     </div>
                 </div>
