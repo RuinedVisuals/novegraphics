@@ -77,7 +77,11 @@ export default function FilmGallery({ films }: { films: Film[] }) {
             <div className={styles.filmDetails}>
               {activeFilm && (
                 <>
-                  <h2>{activeFilm.title}</h2>
+                  <h2>
+                    {activeFilm.slug
+                      ? <Link href={`/projects/${activeFilm.slug}`} className={styles.titleLink}>{activeFilm.title}</Link>
+                      : activeFilm.title}
+                  </h2>
                   <div className={styles.category}>{activeFilm.subTitle}</div>
                   <div className={styles.fileRow}>
                     <span>{activeFilm.year}</span>

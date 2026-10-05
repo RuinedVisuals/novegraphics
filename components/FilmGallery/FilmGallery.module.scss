@@ -1,15 +1,15 @@
 @use '../../styles/mixins' as *;
 
 .galleryContainer {
-  // canvas is lifted and trimmed at the bottom so the active poster
-  // clears the title / counter block without shrinking much
+  // desktop: the canvas fills the section and Scene fits the active card
+  // between the header and the title block (BAND_TOP / BAND_BOTTOM)
   --canvas-lift: 0px;
-  --canvas-trim: 50px;
+  --canvas-trim: 0px;
 
   position: relative;
   width: 100%;
   height: 100vh;
-  min-height: 720px;
+  min-height: 900px;
   background:
     radial-gradient(ellipse 60% 50% at 50% 48%, color-mix(in srgb, var(--red-dark) 28%, transparent), transparent 70%),
     var(--bg);
@@ -131,6 +131,14 @@
   }
 }
 
+.titleLink {
+  color: inherit;
+  cursor: none;
+  transition: color 0.2s ease;
+
+  &:hover { color: var(--red); }
+}
+
 .category {
   margin-top: 8px;
   font-family: var(--font-mono);
@@ -198,14 +206,15 @@
   }
 }
 
+// sits under .canvasWrapper so the VHS lines texture the backdrop, not the artwork
 .scanlines {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 3;
+  z-index: 1;
   background:
-    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.12) 50%),
-    linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.08) 50%),
+    linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
   background-size: 100% 4px, 3px 100%;
 }
 
@@ -230,7 +239,7 @@
   }
 
   .galleryContainer {
-    --canvas-lift: 70px;
+    --canvas-lift: 0px;
     --canvas-trim: 0px;
   }
 

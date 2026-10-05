@@ -3,7 +3,7 @@ import { client } from './client'
 import { urlFor } from './image'
 import { PROJECT_ORDER } from './queries'
 import { CATEGORY_LABELS, type ProjectCategory } from './types'
-import type { Film } from '@/components/FilmGallery/data'
+import { SPINE_W, SPINE_H, type Film } from '@/components/FilmGallery/data'
 
 const ACCENTS = ['#ff2a1f', '#3a0618']
 
@@ -33,9 +33,10 @@ export async function getFilms(): Promise<Film[]> {
       subTitle: CATEGORY_LABELS[p.category as ProjectCategory] ?? p.category?.toUpperCase() ?? '',
       year: String(p.year ?? ''),
       category: p.category ?? '',
-      image: urlFor(p.frontImage).width(800).height(1168).url(),
-      back:  p.backImage  ? urlFor(p.backImage).width(800).height(1168).url()  : undefined,
-      spine: p.spineImage ? urlFor(p.spineImage).width(200).height(1168).url() : undefined,
+      // max-w / max-h: never cropped (width+height would add a rect crop); the 3D card sizes itself to the image
+      image: urlFor(p.frontImage).maxWidth(800).maxHeight(1168).url(),
+      back:  p.backImage  ? urlFor(p.backImage).maxWidth(800).maxHeight(1168).url()  : undefined,
+      spine: p.spineImage ? urlFor(p.spineImage).width(SPINE_W).height(SPINE_H).url() : undefined,
       accent: ACCENTS[i % ACCENTS.length],
       description: p.description ?? '',
     }))

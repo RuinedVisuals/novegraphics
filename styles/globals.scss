@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Barlow+Condensed:wght@300;400;600;700&family=Anton&family=Instrument+Serif:ital@0;1&display=swap');
 @import 'variables';
+@import 'mixins';
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -14,9 +15,11 @@ html {
   cursor: none;
 }
 
+// VHS texture lives in the page background and scrolls with it (not a fixed overlay)
 body {
   overflow-x: hidden;
   min-height: 100vh;
+  background: $vhs-scanlines, $vhs-noise, var(--bg);
 }
 
 a {

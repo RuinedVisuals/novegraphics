@@ -53,6 +53,7 @@
 
 .portraitFrame {
   position: relative;
+  @include vhs-texture;
   aspect-ratio: 4 / 5;
   transform: rotate(2.5deg);
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
@@ -312,6 +313,7 @@
 
 .procFrame {
   position: relative;
+  @include vhs-texture;
   aspect-ratio: 3 / 4;
   overflow: hidden;
   background: var(--bg-3);

@@ -1,3 +1,5 @@
+@use '../../styles/mixins' as *;
+
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -31,6 +33,7 @@
 .face {
   position: absolute;
   inset: 0;
+  @include vhs-texture;
   backface-visibility: hidden;
   overflow: hidden;
 

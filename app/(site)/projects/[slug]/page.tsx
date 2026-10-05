@@ -25,6 +25,7 @@ const SLOTS = [
   { cls: 'fr4', aspect: '21 / 9' },
   { cls: 'fr5', aspect: '3 / 4' },
   { cls: 'fr6', aspect: '16 / 9' },
+  { cls: 'fr7', aspect: '3 / 2' }, // under fr1, tilted
 ] as const
 
 // "a / b / c" → tone steps; otherwise split the statement into three even chunks.
@@ -59,7 +60,15 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
         .filter((img): img is SanityImage => Boolean(img))
         .map(image => ({ image, caption: undefined, layout: undefined }))
 
-  const process: SanityImage[] = project.process?.length ? project.process : frames.map(f => f.image)
+  // fr7 sits under fr1: the 7th gallery frame, else the first process image not already shown.
+  if (!frames[6] && frames.length < 7) {
+    const shown = new Set(frames.map(f => f.image.asset._ref))
+    const extra = project.process?.find(img => !shown.has(img.asset._ref))
+    if (extra) frames[6] = { image: extra, caption: undefined, layout: undefined }
+  }
+  const frameCount = frames.filter(Boolean).length
+
+  const process: SanityImage[] = project.process?.length ? project.process : frames.filter(Boolean).map(f => f.image)
   // Fill the contact sheet so the loop never shows a gap
   const sheet = process.length ? Array.from({ length: Math.max(6, process.length) }, (_, i) => process[i % process.length]) : []
 
@@ -162,10 +171,13 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
         <section className={styles.gallery}>
           <div className={styles.galleryHead}>
             <span className={styles.red}>[ GALLERY ]</span>
-            <span>{p2(frames.length)} FRAMES</span>
+            <span>{p2(frameCount)} FRAMES</span>
           </div>
           <div className={styles.grid}>
-            {frame(0)}
+            <div className={styles.leftCol}>
+              {frame(0)}
+              {frame(6)}
+            </div>
             {(frames[1] || frames[2]) && (
               <div className={styles.rightCol}>
                 {frame(1)}

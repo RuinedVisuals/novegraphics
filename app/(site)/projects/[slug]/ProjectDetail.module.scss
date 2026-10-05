@@ -20,6 +20,7 @@
 .heroMedia {
   position: absolute;
   inset: 0;
+  @include vhs-texture;
 
   video {
     width: 100%;
@@ -203,15 +204,16 @@
   position: relative;
   overflow: hidden;
   background: var(--bg-3);
+  @include vhs-texture;
 }
 
 .caption {
   margin-top: 10px;
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: var(--ink-dim);
+  color: #a6a6a6;
 
   &.split {
     display: flex;
@@ -220,7 +222,20 @@
   }
 }
 
-.fr1 { grid-column: span 7; }
+.leftCol {
+  grid-column: span 7;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(40px, 5vw, 80px);
+}
+
+.fr7 {
+  width: 86%;
+  margin-left: 6%;
+
+  .frame { transform: rotate(2deg); }
+  .caption { margin-top: 14px; }
+}
 
 .rightCol {
   grid-column: span 5;
@@ -298,6 +313,7 @@
   position: relative;
   aspect-ratio: 4 / 3;
   background: #151515;
+  @include vhs-texture;
 }
 
 .sheetLabel {
@@ -404,7 +420,7 @@
     margin-top: 32px;
   }
 
-  .fr1,
+  .leftCol,
   .rightCol,
   .fr4,
   .fr5,

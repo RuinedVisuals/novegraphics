@@ -64,3 +64,19 @@ $mobile: 768px;
     color: var(--ink);
   }
 }
+
+// VHS scanlines + film grain. Static; scrolls with whatever it is applied to.
+$vhs-scanlines: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.05) 0 1px, transparent 1px 3px);
+$vhs-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.09'/%3E%3C/svg%3E");
+
+// Texture over an image frame (the frame must be positioned).
+@mixin vhs-texture {
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: $vhs-scanlines, $vhs-noise;
+  }
+}
