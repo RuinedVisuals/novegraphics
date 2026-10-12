@@ -12,7 +12,9 @@ const BARS = 5;
 export default function AudioPlayer() {
   const [idx, setIdx] = useState(0);
   const [playing, setPlaying] = useState(false);
-  const [minimized, setMinimized] = useState(false);
+  // null = default: expanded on desktop, minimized on mobile (decided in CSS, so SSR matches)
+  const [minimized, setMinimized] = useState<boolean | null>(null);
+  const isMini = () => minimized ?? window.matchMedia('(max-width: 767px)').matches;
 
   const howlRef = useRef<Howl | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -184,20 +186,20 @@ export default function AudioPlayer() {
   );
 
   return (
-    <div className={`${styles.player} ${minimized ? styles.minimized : ''}`}>
-      <div className={styles.extra} aria-hidden={minimized}>
+    <div className={`${styles.player} ${minimized === true ? styles.minimized : minimized === null ? styles.autoMini : ''}`}>
+      <div className={styles.extra} aria-hidden={minimized === true}>
         <button
           className={styles.skip}
           onClick={() => setMinimized(true)}
           aria-label="Minimize player"
-          tabIndex={minimized ? -1 : 0}
+          tabIndex={minimized === true ? -1 : 0}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
             <path d="M5 11h14v2H5z" />
           </svg>
         </button>
 
-        <button className={styles.skip} onClick={handlePrev} aria-label="Previous track" tabIndex={minimized ? -1 : 0}>
+        <button className={styles.skip} onClick={handlePrev} aria-label="Previous track" tabIndex={minimized === true ? -1 : 0}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M6 6h2v12H6V6zm3.5 6 8.5 6V6l-8.5 6z" />
           </svg>
@@ -208,7 +210,7 @@ export default function AudioPlayer() {
           <span className={styles.artist}>{track.artist}</span>
         </div>
 
-        <button className={styles.skip} onClick={handleNext} aria-label="Next track" tabIndex={minimized ? -1 : 0}>
+        <button className={styles.skip} onClick={handleNext} aria-label="Next track" tabIndex={minimized === true ? -1 : 0}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M6 18l8.5-6L6 6v12zm10-12v12h2V6h-2z" />
           </svg>
@@ -217,11 +219,11 @@ export default function AudioPlayer() {
 
       <button
         className={styles.ball}
-        onClick={minimized ? () => setMinimized(false) : handlePlayPause}
-        aria-label={minimized ? 'Expand player' : playing ? 'Pause music' : 'Play music'}
+        onClick={() => (isMini() ? setMinimized(false) : handlePlayPause())}
+        aria-label={minimized === true ? 'Expand player' : playing ? 'Pause music' : 'Play music'}
       >
         <canvas ref={canvasRef} className={styles.waveform} />
-        {!minimized && <span className={styles.icon}>{playing ? PauseIcon : PlayIcon}</span>}
+        <span className={styles.icon}>{playing ? PauseIcon : PlayIcon}</span>
       </button>
     </div>
   );

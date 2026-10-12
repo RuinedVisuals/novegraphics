@@ -57,19 +57,15 @@
   font-family: var(--font-mono);
   font-size: 0.7rem;
   letter-spacing: 0.3em;
-  color: var(--ink-dim);
+  color: #fff;
   cursor: none;
-  transition: color 0.2s;
-
-  &:hover {
-    color: #fff;
-  }
 }
 
 .plus {
   font-family: var(--font-mono);
-  font-size: 1.4rem;
-  color: var(--red);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 1;
+  color: #fff;
   align-self: center;
 }
 
@@ -82,11 +78,16 @@
   z-index: 1;
 }
 
+// the item only is as wide as its content, so hover doesn't fire across the whole row
+.navItem {
+  align-self: flex-start;
+}
+
 .navItem a {
   font-family: var(--font-display);
   font-size: clamp(64px, 10vw, 130px);
   color: var(--ink);
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 24px;
   line-height: 0.9;
@@ -96,7 +97,7 @@
     font-family: var(--font-mono);
     font-size: 0.75rem;
     letter-spacing: 0.2em;
-    color: var(--red);
+    color: #fff;
     align-self: center;
     opacity: 0.6;
     transition: opacity 0.3s;
@@ -135,38 +136,43 @@
     top: 50%;
     height: 4px;
     margin-top: -2px;
-    background: var(--red);
+    background: var(--red-dark);
     transform: scaleX(0);
     transform-origin: left;
     pointer-events: none;
   }
 
-  &:hover {
-    color: #fff;
-
-    .index {
-      opacity: 1;
+  // text swap / strike only for real hover devices; on touch it fired on tap, right before navigating
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
       color: #fff;
-    }
 
-    .word {
-      clip-path: inset(0 0 0 100%);
-    }
+      .index {
+        opacity: 1;
+        color: #fff;
+      }
 
-    .note {
-      clip-path: inset(0 0 0 0);
-      transition-delay: 0.4s;
-    }
+      .word {
+        clip-path: inset(0 0 0 100%);
+      }
 
-    .strike {
-      animation: strike 0.65s cubic-bezier(0.77, 0, 0.18, 1) forwards;
+      .note {
+        clip-path: inset(0 0 0 0);
+        transition-delay: 0.4s;
+      }
+
+      .strike {
+        animation: strike 0.65s cubic-bezier(0.77, 0, 0.18, 1) forwards;
+      }
     }
   }
 }
 
 // focus the hovered link, dim the rest
-.navList:has(a:hover) .navItem a:not(:hover) {
-  opacity: 0.18;
+@media (hover: hover) and (pointer: fine) {
+  .navList:has(a:hover) .navItem a:not(:hover) {
+    opacity: 0.18;
+  }
 }
 
 @keyframes strike {
@@ -190,4 +196,32 @@
   font-size: 0.65rem;
   letter-spacing: 0.25em;
   color: var(--ink-dim);
+}
+
+// Mobile: bigger items with a little air between them
+@media (max-width: 767px) {
+  // dim the shader behind the links so the text stays readable
+  .vhsCanvas {
+    opacity: 0.45;
+  }
+
+  .navList {
+    gap: 14px;
+  }
+
+  .navItem a {
+    font-size: clamp(68px, 18vw, 96px);
+  }
+
+  .subMenu {
+    gap: 22px;
+
+    .navItem a {
+      font-size: clamp(48px, 12vw, 64px);
+    }
+  }
+
+  .plus {
+    font-size: clamp(2rem, 7vw, 2.6rem);
+  }
 }

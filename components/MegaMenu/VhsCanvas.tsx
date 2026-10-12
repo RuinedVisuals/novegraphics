@@ -74,7 +74,8 @@ void main() {
 
   // dim base text, lit up by the cursor
   float lit = 0.2 + infl * 0.9 + uBoost * 0.1;
-  vec3 col = vec3(r * 0.95, g * 0.2, b * 0.18) * lit;
+  // base ink is --red-dark (#8b1a14)
+  vec3 col = vec3(r * 0.545, g * 0.102, b * 0.078) * lit * 1.35;
   col += vec3(g) * infl * infl * 0.4;
 
   // background glow

@@ -6,6 +6,26 @@ $size: 52px;
 $open: 320px;
 $mini: 44px;
 
+@mixin mini {
+  width: $mini;
+  height: $mini;
+
+  .extra {
+    opacity: 0;
+    transform: translateX(12px);
+    pointer-events: none;
+  }
+
+  .ball {
+    width: calc(#{$mini} - 2px);
+    height: calc(#{$mini} - 2px);
+  }
+
+  .icon {
+    display: none;
+  }
+}
+
 .player {
   @include negative-panel;
   position: fixed;
@@ -40,18 +60,13 @@ $mini: 44px;
   }
 
   &.minimized {
-    width: $mini;
-    height: $mini;
+    @include mini;
+  }
 
-    .extra {
-      opacity: 0;
-      transform: translateX(12px);
-      pointer-events: none;
-    }
-
-    .ball {
-      width: calc(#{$mini} - 2px);
-      height: calc(#{$mini} - 2px);
+  // default on mobile: starts minimized until the user expands it
+  &.autoMini {
+    @media (max-width: 767px) {
+      @include mini;
     }
   }
 
