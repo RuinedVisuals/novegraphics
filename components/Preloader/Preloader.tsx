@@ -56,6 +56,37 @@ export default function Preloader() {
             });
         });
 
+        let tl: gsap.core.Timeline | undefined;
+        let cancelled = false;
+
+        // Start the animation only once the posters are decoded (max 2.5s),
+        // otherwise on a slow connection the fan opens on empty cards.
+        const loaded = Promise.all(
+            IMAGES.map((src) => {
+                const img = new Image();
+                img.src = src;
+                return img.decode().catch(() => {});
+            })
+        );
+        const timeout = new Promise((r) => setTimeout(r, 2500));
+
+        // On the home page also wait for the WebGL gallery (max 5s), so its
+        // heavy setup happens while the preloader is still static.
+        const w = window as any;
+        const galleryReady =
+            window.location.pathname !== '/' || w.__galleryReady
+                ? Promise.resolve()
+                : new Promise<void>((resolve) => {
+                      window.addEventListener('gallery-ready', () => resolve(), { once: true });
+                      setTimeout(resolve, 5000);
+                  });
+
+        Promise.all([Promise.race([loaded, timeout]), galleryReady]).then(() => {
+            if (cancelled) return;
+            tl = buildTimeline();
+        });
+
+        function buildTimeline() {
         const tl = gsap.timeline({
             defaults: {
                 overwrite: 'auto',
@@ -63,6 +94,8 @@ export default function Preloader() {
 
             onComplete() {
                 document.body.style.overflow = '';
+                (window as any).__preloaderDone = true;
+                window.dispatchEvent(new Event('preloader-done'));
                 // Remove GSAP inline transform from #page-content so position:fixed
                 // children (PageTransition panel, etc.) anchor to the viewport again
                 gsap.set('#page-content', { clearProps: 'transform,opacity' });
@@ -95,7 +128,7 @@ export default function Preloader() {
             })
 
             // μένει λίγο ανοιχτό
-            .to({}, { duration: 1.1 })
+            .to({}, { duration: 0.2 })
 
             // cinematic close πίσω στη main card
             .to(cards, {
@@ -136,8 +169,12 @@ export default function Preloader() {
                 '-=0.74'
             );
 
+        return tl;
+        }
+
         return () => {
-            tl.kill();
+            cancelled = true;
+            tl?.kill();
             document.body.style.overflow = '';
         };
     }, []);

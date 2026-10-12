@@ -5,36 +5,21 @@ import { Howl, Howler } from 'howler';
 import { TRACKS } from './tracks';
 import styles from './AudioPlayer.module.scss';
 
-const CANVAS_W = 300;
-const CANVAS_H = 56;
-const BARS = 40;
-const PAD = 20;
+const CANVAS_W = 26;
+const CANVAS_H = 22;
+const BARS = 5;
 
 export default function AudioPlayer() {
   const [idx, setIdx] = useState(0);
   const [playing, setPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  // start minimized on mobile
-  useEffect(() => {
-    if (window.innerWidth < 768) setCollapsed(true);
-  }, []);
+  const [minimized, setMinimized] = useState(false);
 
   const howlRef = useRef<Howl | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const vizRaf = useRef(0);
-  const seekRaf = useRef(0);
+  const interacted = useRef(false);
   const idxRef = useRef(0);
 
   // Retina-aware canvas setup
@@ -55,24 +40,19 @@ export default function AudioPlayer() {
   function drawBars(ctx: CanvasRenderingContext2D, data: Uint8Array | null) {
     ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
 
-    const drawable = CANVAS_W - PAD * 2;
-    const step = drawable / BARS;
-    const barW = Math.max(2, step * 0.58);
+    const barW = 2.6;
+    const step = CANVAS_W / BARS;
 
-    // the player is a dark panel in both themes
-    const rgb = '212,43,30';
-
-    const grad = ctx.createLinearGradient(0, CANVAS_H, 0, 0);
-    grad.addColorStop(0, `rgba(${rgb},0.95)`);
-    grad.addColorStop(0.5, `rgba(${rgb},0.38)`);
-    grad.addColorStop(1, `rgba(${rgb},0.04)`);
-    ctx.fillStyle = grad;
+    // the player is a dark ball in both themes
+    ctx.fillStyle = 'rgba(212,43,30,0.95)';
 
     for (let i = 0; i < BARS; i++) {
       const v = data ? data[i] / 255 : 0;
-      const h = v > 0 ? Math.max(2, v * CANVAS_H * 0.88) : 2;
-      const x = PAD + i * step + (step - barW) / 2;
-      ctx.fillRect(x, CANVAS_H - h, barW, h);
+      const h = v > 0 ? Math.max(2.6, v * CANVAS_H) : 2.6;
+      const x = i * step + (step - barW) / 2;
+      ctx.beginPath();
+      ctx.roundRect(x, (CANVAS_H - h) / 2, barW, h, barW / 2);
+      ctx.fill();
     }
   }
 
@@ -99,7 +79,7 @@ export default function AudioPlayer() {
 
     function frame() {
       analyser.getByteFrequencyData(full);
-      for (let i = 0; i < BARS; i++) slice[i] = full[i];
+      for (let i = 0; i < BARS; i++) slice[i] = full[2 + i * 3];
       drawBars(ctx, slice);
       vizRaf.current = requestAnimationFrame(frame);
     }
@@ -108,13 +88,11 @@ export default function AudioPlayer() {
 
   function stopAll() {
     cancelAnimationFrame(vizRaf.current);
-    cancelAnimationFrame(seekRaf.current);
   }
 
   function loadTrack(trackIdx: number, autoplay = false) {
     howlRef.current?.unload();
     stopAll();
-    setProgress(0);
 
     const howl = new Howl({
       src: [TRACKS[trackIdx].src],
@@ -123,12 +101,6 @@ export default function AudioPlayer() {
         setPlaying(true);
         setupAnalyser();
         startViz();
-        const tick = () => {
-          const s = howl.seek() as number;
-          setProgress(s / (howl.duration() || 1));
-          seekRaf.current = requestAnimationFrame(tick);
-        };
-        tick();
       },
       onpause() {
         setPlaying(false);
@@ -159,7 +131,7 @@ export default function AudioPlayer() {
 
     const autoPlay = () => {
       const howl = howlRef.current;
-      if (!howl || howl.playing()) return;
+      if (!howl || howl.playing() || interacted.current) return;
       if (Howler.ctx?.state === 'suspended') Howler.ctx.resume();
       howl.play();
     };
@@ -175,6 +147,7 @@ export default function AudioPlayer() {
   const handlePlayPause = () => {
     const howl = howlRef.current;
     if (!howl) return;
+    interacted.current = true;
     if (playing) {
       howl.pause();
     } else {
@@ -197,106 +170,59 @@ export default function AudioPlayer() {
     loadTrack(n, playing);
   };
 
-  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
-    const howl = howlRef.current;
-    if (!howl) return;
-    const { left, width } = e.currentTarget.getBoundingClientRect();
-    const r = Math.max(0, Math.min(1, (e.clientX - left) / width));
-    howl.seek(r * howl.duration());
-    setProgress(r);
-  };
-
   const track = TRACKS[idx];
 
-  if (isMobile && collapsed) {
-    return (
-      <button
-        className={styles.collapsedBtn}
-        onClick={() => setCollapsed(false)}
-        aria-label="Show player"
-      >
-        {playing ? (
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
-          </svg>
-        ) : (
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M8 5v14l11-7L8 5z" />
-          </svg>
-        )}
-      </button>
-    );
-  }
+  const PlayIcon = (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M8 5v14l11-7L8 5z" />
+    </svg>
+  );
+  const PauseIcon = (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+    </svg>
+  );
 
   return (
-    <div className={`${styles.player} ${isMobile ? styles.playerMobile : ''}`}>
-      {isMobile && (
+    <div className={`${styles.player} ${minimized ? styles.minimized : ''}`}>
+      <div className={styles.extra} aria-hidden={minimized}>
         <button
-          className={styles.closeBtn}
-          onClick={() => setCollapsed(true)}
+          className={styles.skip}
+          onClick={() => setMinimized(true)}
           aria-label="Minimize player"
+          tabIndex={minimized ? -1 : 0}
         >
-          ×
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M5 11h14v2H5z" />
+          </svg>
         </button>
-      )}
 
-      <div className={styles.topLine} />
+        <button className={styles.skip} onClick={handlePrev} aria-label="Previous track" tabIndex={minimized ? -1 : 0}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6 6h2v12H6V6zm3.5 6 8.5 6V6l-8.5 6z" />
+          </svg>
+        </button>
 
-      <canvas ref={canvasRef} className={styles.waveform} />
-
-      <div className={styles.body}>
         <div className={styles.info}>
-          <div className={styles.infoRow}>
-            <span className={styles.artist}>{track.artist}</span>
-            <span className={styles.counter}>
-              {String(idx + 1).padStart(2, '0')} / {String(TRACKS.length).padStart(2, '0')}
-            </span>
-          </div>
           <span className={styles.title}>{track.title}</span>
+          <span className={styles.artist}>{track.artist}</span>
         </div>
 
-        <div
-          className={styles.progress}
-          onClick={handleSeek}
-          role="slider"
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={Math.round(progress * 100)}
-        >
-          <div className={styles.fill} style={{ width: `${progress * 100}%` }} />
-          <div className={styles.thumb} style={{ left: `${progress * 100}%` }} />
-        </div>
-
-        <div className={styles.controls}>
-          <button className={styles.btn} onClick={handlePrev} aria-label="Previous track">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M6 6h2v12H6V6zm3.5 6 8.5 6V6l-8.5 6z" />
-            </svg>
-          </button>
-
-          <button
-            className={`${styles.btn} ${styles.playBtn}`}
-            onClick={handlePlayPause}
-            aria-label={playing ? 'Pause' : 'Play'}
-          >
-            {playing ? (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
-              </svg>
-            ) : (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M8 5v14l11-7L8 5z" />
-              </svg>
-            )}
-          </button>
-
-          <button className={styles.btn} onClick={handleNext} aria-label="Next track">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M6 18l8.5-6L6 6v12zm10-12v12h2V6h-2z" />
-            </svg>
-          </button>
-        </div>
+        <button className={styles.skip} onClick={handleNext} aria-label="Next track" tabIndex={minimized ? -1 : 0}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6 18l8.5-6L6 6v12zm10-12v12h2V6h-2z" />
+          </svg>
+        </button>
       </div>
+
+      <button
+        className={styles.ball}
+        onClick={minimized ? () => setMinimized(false) : handlePlayPause}
+        aria-label={minimized ? 'Expand player' : playing ? 'Pause music' : 'Play music'}
+      >
+        <canvas ref={canvasRef} className={styles.waveform} />
+        {!minimized && <span className={styles.icon}>{playing ? PauseIcon : PlayIcon}</span>}
+      </button>
     </div>
   );
 }

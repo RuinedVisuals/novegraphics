@@ -17,15 +17,15 @@ export type WorkItem = {
   hero: string;
 };
 
-type Props = { items: WorkItem[]; categories: string[] };
+type Props = { items: WorkItem[]; categories: string[]; initialFilter?: string };
 
 const p2 = (n: number) => String(n).padStart(2, '0');
 const CARD_ROT = [-2, 1.5, -1, 2, -1.5];
 const PREVIEW_ROT = [-4, 3, -2, 4, -3];
 const COL_OFFSET = ['0px', '80px', '30px'];
 
-export default function WorkArchive({ items, categories }: Props) {
-  const [filter, setFilter] = useState('ALL');
+export default function WorkArchive({ items, categories, initialFilter }: Props) {
+  const [filter, setFilter] = useState(initialFilter ?? 'ALL');
   const [view, setView] = useState<'index' | 'archive'>('index');
   const [hover, setHover] = useState(-1);
   const [flick, setFlick] = useState(0);

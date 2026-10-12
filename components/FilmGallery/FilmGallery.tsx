@@ -7,12 +7,42 @@ import type { Film } from "./data";
 import { Scene } from "./Scene";
 import styles from "./FilmGallery.module.scss";
 
+// Rendered inside <Suspense>, so it only mounts once every texture has resolved.
+function GalleryReady() {
+  useEffect(() => {
+    let raf2 = 0;
+    const raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => {
+        (window as any).__galleryReady = true;
+        window.dispatchEvent(new Event('gallery-ready'));
+      });
+    });
+    return () => {
+      cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf2);
+    };
+  }, []);
+  return null;
+}
+
 const getFilmIndex = (index: number, length: number) =>
   ((index % length) + length) % length;
 
 export default function FilmGallery({ films }: { films: Film[] }) {
   const [activeIndex, setActiveIndex] = useState(2);
   const [isMobile, setIsMobile] = useState(false);
+  // Mount the WebGL canvas (texture uploads, context creation) only after the
+  // page transition / preloader has covered the screen, so it doesn't jank them.
+  const [canvasReady, setCanvasReady] = useState(false);
+
+  useEffect(() => {
+    // First load: mount right away; the preloader waits for 'gallery-ready'
+    // so the WebGL setup freezes the static preloader, not its animation.
+    // Client navigation: short delay so the page transition isn't janked.
+    const delay = (window as any).__preloaderDone ? 500 : 0;
+    const id = setTimeout(() => setCanvasReady(true), delay);
+    return () => clearTimeout(id);
+  }, []);
 
   const activeFilm = films.length > 0 ? films[getFilmIndex(activeIndex, films.length)] : null;
   const p2 = (n: number) => String(n).padStart(2, "0");
@@ -41,7 +71,7 @@ export default function FilmGallery({ films }: { films: Film[] }) {
   return (
     <section className={styles.galleryContainer} id="film-gallery">
       <div className={styles.canvasWrapper}>
-        <Canvas shadows dpr={[1, 2]} camera={{ position: [0, 0, 6.2], fov: 34 }} style={{ touchAction: "none" }}>
+        {canvasReady && <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 6.2], fov: 34 }} style={{ touchAction: "none" }}>
           <Suspense fallback={null}>
             <Scene
               films={films}
@@ -49,8 +79,9 @@ export default function FilmGallery({ films }: { films: Film[] }) {
               setActiveIndex={setActiveIndex}
               isMobile={isMobile}
             />
+            <GalleryReady />
           </Suspense>
-        </Canvas>
+        </Canvas>}
       </div>
 
       <div className={styles.scanlines} />

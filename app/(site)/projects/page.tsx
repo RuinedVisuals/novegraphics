@@ -2,7 +2,9 @@ import { client } from '@/sanity/client'
 import { urlFor } from '@/sanity/image'
 import { projectListQuery } from '@/sanity/queries'
 import { CATEGORY_LABELS, type Project } from '@/sanity/types'
-import WorkArchive, { type WorkItem } from '@/components/WorkArchive/WorkArchive'
+import { Suspense } from 'react'
+import { type WorkItem } from '@/components/WorkArchive/WorkArchive'
+import WorkArchiveRoute from '@/components/WorkArchive/WorkArchiveRoute'
 
 export const revalidate = 60
 
@@ -26,7 +28,13 @@ export default async function ProjectsPage() {
 
   return (
     <main>
-      <WorkArchive items={items} categories={Object.values(CATEGORY_LABELS)} />
+      <Suspense>
+        <WorkArchiveRoute
+          items={items}
+          categories={Object.values(CATEGORY_LABELS)}
+          labelsBySlug={CATEGORY_LABELS}
+        />
+      </Suspense>
     </main>
   )
 }

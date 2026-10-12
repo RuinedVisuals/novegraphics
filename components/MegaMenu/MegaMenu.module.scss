@@ -10,6 +10,14 @@
   transform-origin: top;
 }
 
+.vhsCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
 .identifier {
   position: absolute;
   top: calc(var(--nav-height) + 24px);
@@ -18,6 +26,51 @@
   font-size: 0.6rem;
   letter-spacing: 0.3em;
   color: var(--ink-dim);
+}
+
+.nav {
+  position: relative;
+  display: grid; // both lists share one cell so the overlay height never jumps
+  z-index: 1;
+
+  > * {
+    grid-area: 1 / 1;
+    align-self: center; // each list centred on its own, whatever the other one's height
+  }
+}
+
+.subMenu {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  .navItem a {
+    font-size: clamp(44px, 6.5vw, 84px);
+  }
+}
+
+.back {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  padding: 4px 0;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  color: var(--ink-dim);
+  cursor: none;
+  transition: color 0.2s;
+
+  &:hover {
+    color: #fff;
+  }
+}
+
+.plus {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  color: var(--red);
+  align-self: center;
 }
 
 .navList {
@@ -37,22 +90,95 @@
   align-items: center;
   gap: 24px;
   line-height: 0.9;
-  transition: color 0.2s, transform 0.2s;
+  transition: color 0.2s, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s;
 
-  .arrow {
+  .index {
     font-family: var(--font-mono);
-    font-size: 1rem;
-    opacity: 0;
-    transition: opacity 0.2s;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--red);
+    align-self: center;
+    opacity: 0.6;
+    transition: opacity 0.3s;
+  }
+
+  // Hover: a red line strikes through the word, erases it and the note takes its place
+  .label {
+    position: relative;
+    display: inline-block;
+  }
+
+  .word {
+    display: inline-block;
+    clip-path: inset(0 0 0 0);
+    transition: clip-path 0.35s cubic-bezier(0.77, 0, 0.18, 1) 0.15s;
+  }
+
+  .note {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    font-family: var(--font-mono);
+    font-size: clamp(0.8rem, 1.5vw, 1.3rem);
+    letter-spacing: 0.35em;
+    color: #fff;
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 0.4s cubic-bezier(0.77, 0, 0.18, 1);
+  }
+
+  .strike {
+    position: absolute;
+    left: -4px;
+    right: -4px;
+    top: 50%;
+    height: 4px;
+    margin-top: -2px;
+    background: var(--red);
+    transform: scaleX(0);
+    transform-origin: left;
+    pointer-events: none;
   }
 
   &:hover {
-    color: var(--red);
-    transform: translateX(20px);
+    color: #fff;
 
-    .arrow {
+    .index {
       opacity: 1;
+      color: #fff;
     }
+
+    .word {
+      clip-path: inset(0 0 0 100%);
+    }
+
+    .note {
+      clip-path: inset(0 0 0 0);
+      transition-delay: 0.4s;
+    }
+
+    .strike {
+      animation: strike 0.65s cubic-bezier(0.77, 0, 0.18, 1) forwards;
+    }
+  }
+}
+
+// focus the hovered link, dim the rest
+.navList:has(a:hover) .navItem a:not(:hover) {
+  opacity: 0.18;
+}
+
+@keyframes strike {
+  0%   { transform: scaleX(0); transform-origin: left; }
+  50%  { transform: scaleX(1); transform-origin: left; }
+  50.1% { transform: scaleX(1); transform-origin: right; }
+  100% { transform: scaleX(0); transform-origin: right; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navItem a:hover .strike {
+    animation: none;
   }
 }
 
@@ -64,11 +190,4 @@
   font-size: 0.65rem;
   letter-spacing: 0.25em;
   color: var(--ink-dim);
-}
-
-.graffitiCanvas {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 1;
 }

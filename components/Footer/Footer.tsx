@@ -1,4 +1,5 @@
 import NoveLogo from '@/components/Logo/NoveLogo';
+import ScrambleText from './ScrambleText';
 import styles from './Footer.module.scss';
 
 export default function Footer() {
@@ -9,7 +10,7 @@ export default function Footer() {
           <NoveLogo />
         </div>
 
-        <div className={styles.center}>DIGGING CULTURE</div>
+        <ScrambleText text="DIGGING CULTURE" />
 
         <div className={styles.right}>
           <a
@@ -32,7 +33,15 @@ export default function Footer() {
       </div>
 
       <div className={styles.copy}>
-        NOVE GRAPHICS © 2026&nbsp;&nbsp;//&nbsp;&nbsp;BUILT WITH OBSESSION BY RUINEDVISUALS
+        NOVE GRAPHICS © 2026&nbsp;&nbsp;//&nbsp;&nbsp;BUILT WITH OBSESSION BY{' '}
+        <a
+          href="https://weareruined.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.credit}
+        >
+          RUINEDVISUALS
+        </a>
       </div>
     </footer>
   );

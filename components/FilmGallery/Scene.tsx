@@ -37,6 +37,7 @@ const SPINE_SCALE = {
 const spinePlaneWidth = (s: { x: number; y: number }) => (SPINE_ASPECT * POSTER_H * s.y) / s.x;
 
 const POSTER_MAX_W = 1.15;
+const POSTER_WINDOW = 20;
 
 // Fit a texture inside the poster box without cropping it.
 const fitPoster = (t: THREE.Texture): [number, number] => {
@@ -48,8 +49,13 @@ const fitPoster = (t: THREE.Texture): [number, number] => {
 };
 
 // Centre-crop a texture to the spine aspect (used when a project has no spine image).
+// Cached per source: Poster mounts many times per film and each clone is a separate GPU upload.
+const spineCache = new WeakMap<THREE.Texture, THREE.Texture>();
 const spineFromImage = (t: THREE.Texture) => {
+  const cached = spineCache.get(t);
+  if (cached) return cached;
   const c = t.clone();
+  spineCache.set(t, c);
   const { width, height } = t.image as { width: number; height: number };
   const scale = SPINE_ASPECT / (width / height);
   c.repeat.set(scale, 1);
@@ -100,6 +106,7 @@ function Poster({
 }: PosterProps) {
   const groupRef = useRef<THREE.Group>(null);
   const flipRef = useRef<THREE.Group>(null);
+  const placed = useRef(false);
   const mainMatRef = useRef<THREE.MeshBasicMaterial>(null);
   const stackRef = useRef<THREE.Mesh>(null);
   const stackMatRef = useRef<THREE.MeshBasicMaterial>(null);
@@ -128,7 +135,10 @@ function Poster({
   if (!isCurrentActive && flipped) setFlipped(false);
 
   useEffect(() => {
+    // Textures are shared by every Poster instance of a film: upload once, not once per instance.
     [frontTexture, spineTexture, backTexture].forEach((t) => {
+      if (t.userData.prepared) return;
+      t.userData.prepared = true;
       t.colorSpace = THREE.SRGBColorSpace;
       t.needsUpdate = true;
     });
@@ -163,6 +173,18 @@ function Poster({
     const opacity = abs > 12 ? 0 : isActive ? 1 : isMobile ? 0.35 : 0.9;
 
     tempVec.set(x, y, z);
+
+    // A freshly mounted Poster (window slid) starts at its target instead of
+    // flying in from the origin.
+    if (!placed.current) {
+      placed.current = true;
+      group.position.copy(tempVec);
+      flip.rotation.y = rotY;
+      group.rotation.z = rotZ;
+      group.scale.set(scaleX, scaleY, 1);
+      mainMatRef.current.opacity = opacity;
+    }
+
     group.position.lerp(tempVec, 0.1);
     flip.rotation.y = THREE.MathUtils.lerp(flip.rotation.y, rotY, 0.1);
     group.rotation.z = THREE.MathUtils.lerp(group.rotation.z, rotZ, 0.1);
@@ -278,9 +300,10 @@ export function Scene({ films, activeIndex, setActiveIndex, isMobile }: ScenePro
   const isDragging = useRef(false);
   const hasMoved = useRef(false);
 
+  // Sliding window around the active card: only these Posters are mounted.
   const virtualPosters = useMemo(
-    () => Array.from({ length: 61 }, (_, i) => i - 30),
-    []
+    () => Array.from({ length: POSTER_WINDOW }, (_, i) => activeIndex - POSTER_WINDOW / 2 + i),
+    [activeIndex]
   );
 
   useEffect(() => {

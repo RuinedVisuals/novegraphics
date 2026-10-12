@@ -1,6 +1,6 @@
 import HeroMask from '@/components/HeroMask/HeroMask';
 import Marquee from '@/components/Marquee/Marquee';
-import FilmGallery from '@/components/FilmGallery/FilmGallery';
+import FilmGallery from '@/components/FilmGallery/FilmGalleryLazy';
 import { getFilms } from '@/sanity/getFilms';
 
 export default async function HomePage() {

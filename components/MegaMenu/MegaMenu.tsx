@@ -1,15 +1,35 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import gsap from 'gsap';
+import VhsCanvas from './VhsCanvas';
 import styles from './MegaMenu.module.scss';
 
-const NAV_LINKS = [
-  { label: 'WORK', href: '/projects' },
-  { label: 'ABOUT', href: '/about' },
-  { label: 'CONTACT', href: '/contact' },
+type MenuLink = {
+  label: string;
+  href: string;
+  note: string;
+  /** opens the sub-menu instead of navigating */
+  children?: boolean;
+};
+
+const NAV_LINKS: MenuLink[] = [
+  { label: 'WORK', href: '/projects', note: 'SELECTED FILES', children: true },
+  { label: 'ABOUT', href: '/about', note: 'WHO WE ARE' },
+  { label: 'CONTACT', href: '/contact', note: 'SAY HELLO' },
 ];
+
+// Slugs match the `category` values of the Sanity `project` schema
+const WORK_LINKS: MenuLink[] = [
+  { label: 'ALL', href: '/projects', note: 'THE WHOLE ARCHIVE' },
+  { label: 'POSTERS', href: '/projects?category=poster', note: 'EVENT POSTERS' },
+  { label: 'MERCH', href: '/projects?category=merch', note: 'WEAR IT' },
+  { label: 'BRANDING', href: '/projects?category=branding', note: 'IDENTITIES' },
+  { label: 'ALBUM ART', href: '/projects?category=album-art', note: 'COVERS' },
+];
+
+type View = 'main' | 'work';
 
 interface MegaMenuProps {
   isOpen: boolean;
@@ -18,104 +38,76 @@ interface MegaMenuProps {
 
 export default function MegaMenu({ isOpen, onClose }: MegaMenuProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
-  const itemsRef = useRef<HTMLLIElement[]>([]);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const rafRef = useRef<number | null>(null);
+  const mainRef = useRef<HTMLUListElement>(null);
+  const workRef = useRef<HTMLDivElement>(null);
+  const boostRef = useRef(0);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
+  const viewRef = useRef<View>('main');
+  const [view, setView] = useState<View>('main');
+
+  // The WebGL context is only created the first time the menu opens
+  const [mounted, setMounted] = useState(false);
+  if (isOpen && !mounted) setMounted(true);
+
+  const items = (root: HTMLElement | null) =>
+    root ? Array.from(root.querySelectorAll<HTMLElement>('[data-item]')) : [];
 
   useEffect(() => {
     const overlay = overlayRef.current;
-    const items = itemsRef.current;
-    if (!overlay) return;
+    const main = mainRef.current;
+    const work = workRef.current;
+    if (!overlay || !main || !work) return;
 
     if (tlRef.current) tlRef.current.kill();
 
     if (isOpen) {
-      // Make visible immediately so GSAP can animate
       gsap.set(overlay, { display: 'flex', scaleY: 0 });
-      gsap.set(items, { opacity: 0, y: 60 });
+      gsap.set(main, { autoAlpha: 1, x: 0 });
+      gsap.set(work, { autoAlpha: 0, x: 0 });
+      gsap.set(items(main), { opacity: 0, y: 60 });
 
       const tl = gsap.timeline();
       tl.to(overlay, { scaleY: 1, duration: 0.6, ease: 'power4.inOut' })
-        .to(items, { opacity: 1, y: 0, stagger: 0.08, duration: 0.5, ease: 'power3.out' }, '-=0.3');
+        .to(items(main), { opacity: 1, y: 0, stagger: 0.08, duration: 0.5, ease: 'power3.out' }, '-=0.3');
       tlRef.current = tl;
-
-      drawGraffiti();
     } else {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-
+      const visible = viewRef.current === 'work' ? work : main;
       const tl = gsap.timeline({
-        onComplete: () => gsap.set(overlay, { display: 'none' }),
+        onComplete: () => {
+          gsap.set(overlay, { display: 'none' });
+          // next open always starts on the main list
+          viewRef.current = 'main';
+          setView('main');
+        },
       });
-      tl.to(items, { opacity: 0, y: -20, stagger: 0.04, duration: 0.3, ease: 'power2.in' })
+      tl.to(items(visible), { opacity: 0, y: -20, stagger: 0.04, duration: 0.3, ease: 'power2.in' })
         .to(overlay, { scaleY: 0, duration: 0.5, ease: 'power4.inOut', transformOrigin: 'top' }, '-=0.1');
       tlRef.current = tl;
-
-      clearCanvas();
     }
   }, [isOpen]);
 
-  function clearCanvas() {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
-  }
+  // Slide between the main list and the WORK sub-menu
+  const goTo = (next: View) => {
+    const main = mainRef.current;
+    const work = workRef.current;
+    if (!main || !work || viewRef.current === next) return;
+    viewRef.current = next;
+    setView(next);
 
-  function drawGraffiti() {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    const out = next === 'work' ? main : work;
+    const inn = next === 'work' ? work : main;
+    const dir = next === 'work' ? 1 : -1; // forward slides left, back slides right
 
-    // Capture as non-nullable locals for the rAF closure
-    const c: HTMLCanvasElement = canvas;
-    const x: CanvasRenderingContext2D = ctx;
+    tlRef.current?.kill();
+    gsap.set(inn, { autoAlpha: 1, x: 90 * dir });
+    gsap.set(items(inn), { opacity: 0, y: 30 });
 
-    c.width = window.innerWidth;
-    c.height = window.innerHeight;
-    x.clearRect(0, 0, c.width, c.height);
-
-    const startTime = performance.now();
-    const duration = 800;
-    const layers = 40;
-
-    function frame(now: number) {
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const layersToDraw = Math.floor(progress * layers);
-
-      x.clearRect(0, 0, c.width, c.height);
-
-      const fontSize = c.width * 0.18;
-      x.font = `bold ${fontSize}px 'Bebas Neue', Impact, sans-serif`;
-      x.textAlign = 'center';
-      x.textBaseline = 'middle';
-
-      const rgb = document.documentElement.dataset.theme === 'red'
-        ? '10,10,10'
-        : '212,43,30';
-      const shadow = document.documentElement.dataset.theme === 'red'
-        ? '#0a0a0a'
-        : '#d42b1e';
-
-      for (let i = 0; i < layersToDraw; i++) {
-        const alpha = 0.01 + Math.random() * 0.03;
-        x.fillStyle = `rgba(${rgb}, ${alpha})`;
-        x.shadowColor = shadow;
-        x.shadowBlur = 20;
-        const dx = (Math.random() - 0.5) * 6;
-        const dy = (Math.random() - 0.5) * 6;
-        x.fillText('DIGGING CULTURE', c.width / 2 + dx, c.height / 2 + dy);
-      }
-
-      if (progress < 1) {
-        rafRef.current = requestAnimationFrame(frame);
-      }
-    }
-
-    rafRef.current = requestAnimationFrame(frame);
-  }
+    const tl = gsap.timeline();
+    tl.to(out, { x: -90 * dir, autoAlpha: 0, duration: 0.4, ease: 'power3.in' })
+      .to(inn, { x: 0, duration: 0.6, ease: 'power4.out' }, '-=0.1')
+      .to(items(inn), { opacity: 1, y: 0, stagger: 0.07, duration: 0.5, ease: 'power3.out' }, '<');
+    tlRef.current = tl;
+  };
 
   // Close on Escape
   useEffect(() => {
@@ -124,31 +116,66 @@ export default function MegaMenu({ isOpen, onClose }: MegaMenuProps) {
     return () => window.removeEventListener('keydown', onKey);
   }, [isOpen, onClose]);
 
+  const renderLink = (link: MenuLink, i: number) => (
+    <li key={link.href} className={styles.navItem} data-item>
+      <Link
+        href={link.href}
+        onClick={(e) => {
+          if (link.children) {
+            e.preventDefault();
+            goTo('work');
+          } else {
+            onClose();
+          }
+        }}
+        onPointerEnter={() => { boostRef.current = 1; }}
+      >
+        <span className={styles.index}>{String(i + 1).padStart(2, '0')}</span>
+        <span className={styles.label}>
+          <span className={styles.word}>{link.label}</span>
+          <span className={styles.note} aria-hidden="true">{link.note}</span>
+          <span className={styles.strike} aria-hidden="true" />
+        </span>
+        {link.children && <span className={styles.plus} aria-hidden="true">+</span>}
+      </Link>
+    </li>
+  );
+
   return (
     <div
       ref={overlayRef}
       className={styles.overlay}
       style={{ display: 'none' }}
     >
-      <canvas ref={canvasRef} className={styles.graffitiCanvas} />
+      {mounted && <VhsCanvas active={isOpen} boostRef={boostRef} />}
 
       <span className={styles.identifier}>NOVE_GRAPHICS.EXE</span>
 
-      <nav>
-        <ul className={styles.navList}>
-          {NAV_LINKS.map((link, i) => (
-            <li
-              key={link.href}
-              className={styles.navItem}
-              ref={(el) => { if (el) itemsRef.current[i] = el; }}
-            >
-              <Link href={link.href} onClick={onClose}>
-                {link.label}
-                <span className={styles.arrow}>→</span>
-              </Link>
-            </li>
-          ))}
+      <nav className={styles.nav} onPointerLeave={() => { boostRef.current = 0; }}>
+        <ul
+          ref={mainRef}
+          className={styles.navList}
+          aria-hidden={view !== 'main'}
+        >
+          {NAV_LINKS.map(renderLink)}
         </ul>
+
+        <div
+          ref={workRef}
+          className={styles.subMenu}
+          style={{ visibility: 'hidden', opacity: 0 }}
+          aria-hidden={view !== 'work'}
+        >
+          <button
+            type="button"
+            className={styles.back}
+            onClick={() => goTo('main')}
+            tabIndex={view === 'work' ? 0 : -1}
+          >
+            <span aria-hidden="true">←</span> BACK / WORK
+          </button>
+          <ul className={styles.navList}>{WORK_LINKS.map(renderLink)}</ul>
+        </div>
       </nav>
 
       <p className={styles.bottomInfo}>ATHENS, GR // GRAPHIC DESIGN // EST. 2016</p>
