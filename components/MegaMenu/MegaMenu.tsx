@@ -16,7 +16,7 @@ type MenuLink = {
 
 const NAV_LINKS: MenuLink[] = [
   { label: 'WORK', href: '/projects', note: 'SELECTED FILES', children: true },
-  { label: 'ABOUT', href: '/about', note: 'WHO WE ARE' },
+  { label: 'ABOUT', href: '/about', note: 'WHO IS NOVE' },
   { label: 'CONTACT', href: '/contact', note: 'SAY HELLO' },
 ];
 

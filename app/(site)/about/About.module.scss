@@ -53,17 +53,14 @@
 
 .portraitFrame {
   position: relative;
-  @include vhs-texture;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 1 / 1;
   transform: rotate(2.5deg);
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
-  background: var(--bg-3);
-  overflow: hidden;
+  filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.7));
 }
 
+// Torn-paper cut-out with transparency: keep the whole shape visible.
 .portraitImg {
-  object-fit: cover;
-  filter: grayscale(1) contrast(1.15);
+  object-fit: contain;
 }
 
 .vhs {

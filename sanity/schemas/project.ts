@@ -134,8 +134,8 @@ export const projectSchema = defineType({
           preview: { select: { title: 'caption', media: 'image' } },
         },
       ],
-      validation: (r) => r.max(7),
-      description: 'Frames 1–6 fill the editorial grid; frame 7 sits tilted under frame 1.',
+      validation: (r) => r.max(24),
+      description: 'Frames 1–6 fill the editorial grid; frame 7 sits tilted under frame 1; any further frames flow into a two-column grid below.',
     }),
     defineField({
       name: 'process',

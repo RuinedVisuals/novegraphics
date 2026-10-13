@@ -60,14 +60,13 @@ export default async function AboutPage() {
           />
           <figure className={styles.portrait}>
             <div className={styles.portraitFrame}>
-              {/* TODO: swap for the real portrait (B/W, shot on dark) */}
-              <Image src="/posters/poster-2.jpg" alt="Nove Graphics — portrait" fill sizes="(max-width: 768px) 100vw, 40vw" className={styles.portraitImg} />
+              <Image src="/about/nove.webp" alt="Nove — light-painted signature in a field at night" fill priority sizes="(max-width: 768px) 100vw, 40vw" className={styles.portraitImg} />
               <div className={styles.vhs}>
                 <div><span>PLAY ▶</span><span>SP</span></div>
                 <div><Timecode /><span className={styles.red}>● REC</span></div>
               </div>
             </div>
-            <figcaption className={styles.figcap}>FIG.01 — THE DIGGER, EXARCHIA 2026</figcaption>
+            <figcaption className={styles.figcap}>FIG.01 — WHO IS NOVE</figcaption>
           </figure>
         </div>
         <div className={styles.facts}>

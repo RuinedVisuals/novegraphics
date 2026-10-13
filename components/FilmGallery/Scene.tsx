@@ -151,13 +151,16 @@ function Poster({
     const flip = flipRef.current;
     const offset = virtualIndex - dragIndexRef.current;
     const abs = Math.abs(offset);
-    const isActive = abs < 0.35;
+    const nearCenter = abs < 0.35;
+    // Look follows the committed active film, not the drag position: a spine dragged over the
+    // centre stays a spine until release, and the active card keeps its size while dragged away.
+    const isActive = isCurrentActive;
 
     const sideGap = isMobile ? 0.7 : 1.28;
     const spineGap = isMobile ? 0.42 : 0.45;
 
     const x =
-      abs < 0.35
+      nearCenter || isCurrentActive
         ? offset * sideGap
         : Math.sign(offset) * (sideGap + (abs - 1) * spineGap);
 

@@ -28,6 +28,9 @@ const SLOTS = [
   { cls: 'fr7', aspect: '3 / 2' }, // under fr1, tilted
 ] as const
 
+// Frames past the 7 editorial slots flow into a plain two-column grid below.
+const MORE_ASPECTS = ['4 / 5', '3 / 2', '1 / 1', '3 / 4']
+
 // "a / b / c" → tone steps; otherwise split the statement into three even chunks.
 function splitStatement(text: string): string[] {
   if (text.includes(' / ')) return text.split(' / ').map(s => s.trim()).filter(Boolean)
@@ -85,7 +88,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
   const frame = (i: number) => {
     const f = frames[i]
     if (!f) return null
-    const slot = SLOTS[i]
+    const slot = SLOTS[i] ?? { cls: 'more', aspect: MORE_ASPECTS[(i - SLOTS.length) % MORE_ASPECTS.length] }
     const caption = `FR ${p2(i + 1)}${f.caption ? ` — ${f.caption}` : ''}`
     return (
       <figure className={`${styles.figure} ${styles[slot.cls]}`} key={i}>
@@ -188,6 +191,11 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
             {frame(4)}
             {frame(5)}
           </div>
+          {frames.length > SLOTS.length && (
+            <div className={styles.moreGrid}>
+              {frames.slice(SLOTS.length).map((_, k) => frame(SLOTS.length + k))}
+            </div>
+          )}
         </section>
       )}
 
