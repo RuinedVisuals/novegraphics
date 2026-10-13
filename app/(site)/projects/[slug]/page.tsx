@@ -7,6 +7,7 @@ import { projectListQuery, projectQuery } from '@/sanity/queries'
 import { CATEGORY_LABELS, type Project, type SanityImage } from '@/sanity/types'
 import Timecode, { RecDot } from '@/components/Timecode/Timecode'
 import { RevealImage, RevealLines, ScrollStatement } from '@/components/Reveal/Reveal'
+import Lightbox from '@/components/Lightbox/Lightbox'
 import styles from './ProjectDetail.module.scss'
 
 export const revalidate = 60
@@ -28,8 +29,25 @@ const SLOTS = [
   { cls: 'fr7', aspect: '3 / 2' }, // under fr1, tilted
 ] as const
 
-// Frames past the 7 editorial slots flow into a plain two-column grid below.
-const MORE_ASPECTS = ['4 / 5', '3 / 2', '1 / 1', '3 / 4']
+// Frames past the 7 editorial slots go into justified rows: each keeps its own proportions and a
+// row's images share one height (flex-grow = aspect), so mixed shapes never leave holes.
+const naturalAspect = (img: SanityImage) => {
+  const m = /-(\d+)x(\d+)-/.exec(img.asset._ref)
+  return m ? Number(m[1]) / Number(m[2]) : 0.8
+}
+
+// Pairs, with a trio at the end when the count is odd (no orphan).
+function chunkRows<T>(items: T[]): T[][] {
+  const rows: T[][] = []
+  let i = 0
+  while (i < items.length) {
+    const left = items.length - i
+    const n = left === 3 ? 3 : Math.min(2, left)
+    rows.push(items.slice(i, i + n))
+    i += n
+  }
+  return rows
+}
 
 // "a / b / c" → tone steps; otherwise split the statement into three even chunks.
 function splitStatement(text: string): string[] {
@@ -85,15 +103,24 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
         ...(project.client ? [{ _key: 'cl', label: 'CLIENT', value: project.client }] : []),
       ]
 
+  // Frame indices can be sparse (frame 7 may exist without 6), so the lightbox is numbered by position.
+  const lightboxFrames = frames.flatMap((f, i) =>
+    f ? [{ index: i, src: urlFor(f.image).width(2400).url(), alt: f.caption ?? `${project.title} — frame ${i + 1}`, caption: `FR ${p2(i + 1)}${f.caption ? ` — ${f.caption}` : ''}` }] : [],
+  )
+
+  const lightboxImages = lightboxFrames.map(({ src, alt, caption }) => ({ src, alt, caption }))
+  const lightboxPos = new Map(lightboxFrames.map((f, pos) => [f.index, pos]))
+
   const frame = (i: number) => {
     const f = frames[i]
     if (!f) return null
-    const slot = SLOTS[i] ?? { cls: 'more', aspect: MORE_ASPECTS[(i - SLOTS.length) % MORE_ASPECTS.length] }
+    const ratio = naturalAspect(f.image)
+    const slot = SLOTS[i] ?? { cls: 'more', aspect: String(ratio) }
     const caption = `FR ${p2(i + 1)}${f.caption ? ` — ${f.caption}` : ''}`
     return (
-      <figure className={`${styles.figure} ${styles[slot.cls]}`} key={i}>
+      <figure className={`${styles.figure} ${styles[slot.cls]}`} key={i} style={i >= SLOTS.length ? { flex: `${ratio} 1 0%` } : undefined}>
         <RevealImage>
-          <div className={styles.frame} style={{ aspectRatio: (f.layout && ASPECT[f.layout]) || slot.aspect }}>
+          <div className={`${styles.frame} ${styles.zoomable}`} data-lightbox={lightboxPos.get(i)} style={{ aspectRatio: (f.layout && ASPECT[f.layout]) || slot.aspect }}>
             <Image
               src={urlFor(f.image).width(i === 3 ? 2400 : 1400).url()}
               alt={f.caption ?? `${project.title} — frame ${i + 1}`}
@@ -193,7 +220,9 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
           </div>
           {frames.length > SLOTS.length && (
             <div className={styles.moreGrid}>
-              {frames.slice(SLOTS.length).map((_, k) => frame(SLOTS.length + k))}
+              {chunkRows(frames.slice(SLOTS.length).map((_, k) => SLOTS.length + k)).map(row => (
+                <div className={styles.moreRow} key={row[0]}>{row.map(frame)}</div>
+              ))}
             </div>
           )}
         </section>
@@ -247,6 +276,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
           </div>
         </Link>
       )}
+      <Lightbox images={lightboxImages} />
     </main>
   )
 }

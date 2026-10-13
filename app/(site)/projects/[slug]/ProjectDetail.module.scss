@@ -207,6 +207,8 @@
   @include vhs-texture;
 }
 
+.zoomable { cursor: zoom-in; }
+
 .caption {
   margin-top: 10px;
   font-family: var(--font-mono);
@@ -252,12 +254,12 @@
 
 .fr4 {
   grid-column: span 12;
-  margin-top: clamp(40px, 6vw, 100px);
+  margin-top: clamp(30px, 4vw, 64px);
 }
 
 .fr5 {
   grid-column: 2 / span 4;
-  margin-top: clamp(40px, 6vw, 100px);
+  margin-top: clamp(30px, 4vw, 64px);
 
   .frame { transform: rotate(-2deg); }
   .caption { margin-top: 14px; }
@@ -265,17 +267,28 @@
 
 .fr6 {
   grid-column: 7 / span 6;
-  margin-top: clamp(100px, 12vw, 200px);
+  margin-top: clamp(40px, 6vw, 100px);
 }
 
 .moreGrid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-items: start;
-  gap: clamp(40px, 5vw, 80px) clamp(10px, 1.4vw, 22px);
-  margin-top: clamp(80px, 10vw, 160px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(24px, 3vw, 48px);
+  margin-top: clamp(50px, 6vw, 100px);
+}
 
-  @media (max-width: 768px) { grid-template-columns: 1fr; }
+.moreRow {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(10px, 1.4vw, 22px);
+
+  .more { min-width: 0; }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+    .more { flex: none !important; }
+  }
 }
 
 // ── Contact sheet ────────────────────────────────
